@@ -4,8 +4,7 @@
 
 int N_robos, M_mesa, Q_fila;
 int cont = 0;
-int first = 0;
-int last = 0;
+
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
@@ -17,10 +16,7 @@ void put() {
         pthread_cond_wait(&empty, &mutex);  // espera a fila não estar cheia
     }
     cont++;
-    last++;
-    if (last == Q_fila) {
-        last = 0;
-    }
+
     if (cont == 1) {
         pthread_cond_broadcast(&full); // sinaliza que a fila não está mais vazia
     }
@@ -33,10 +29,7 @@ void get() {
         pthread_cond_wait(&full, &mutex); // espera a fila não estar vazia
     }
     cont--;
-    first++;
-    if (first == Q_fila) {
-        first = 0;
-    }
+    
     if (cont == Q_fila - 1) {
         pthread_cond_broadcast(&empty); // sinaliza que a fila não está mais cheia
     }
@@ -44,22 +37,24 @@ void get() {
 }
 
 void *producer(void *threadid) {                    
+    int id = *((int *)threadid);
     while(1){          
     printf("Mesa %d iniciou\n", *((int *)threadid)); 
     put();      // produz                       
-    printf("Mesa %d produziu %d\n",*((int *)threadid), 1);
+    printf("Mesa %d produziu 1\n",id);
     printf("A fila tem %d itens\n", cont);
-    printf("Mesa %d terminou\n", *((int *)threadid));
+    printf("Mesa %d terminou\n", id);
     }
 }
 
 void *consumer(void *threadid) {
+    int id = *((int *)threadid);
     while(1){
-    printf("robo %d iniciou\n", *((int *)threadid));    
+    printf("robo %d iniciou\n", id);    
     get();      // consome
-    printf("robo %d consumiu %d\n",*((int *)threadid), 1);  
+    printf("robo %d consumiu 1\n",id);  
     printf("A fila tem %d itens\n", cont);
-    printf("robo %d terminou \n", *((int *)threadid));  
+    printf("robo %d terminou \n", id);  
     }
 
 }
@@ -81,19 +76,17 @@ int main() {
     pthread_t producer_thread[M_mesa];      // quantidade de threads
     pthread_t consumer_thread[N_robos];
 
-    int *idM[M_mesa];                     
-    int *idN[N_robos];
+    int idM[M_mesa];                     
+    int idN[N_robos];
     
         for (int i = 0; i < N_robos; i++) {       
-            idN[i] = (int *)malloc(sizeof(int));             // aloca memória para o id
-            *idN[i] = i;                                                                            
-            pthread_create(&consumer_thread[i], NULL, consumer, (void *)idN[i]);    // cria as threads
+            idN[i] = i;                                                                            
+            pthread_create(&consumer_thread[i], NULL, consumer, &idN[i]);    // cria as threads
         }
 
         for (int i = 0; i < M_mesa; i++) {
-            idM[i] = (int *)malloc(sizeof(int));            // aloca memória para o id 
-            *idM[i] = i;
-            pthread_create(&producer_thread[i], NULL, producer, (void *)idM[i]);   // cria as threads
+            idM[i] = i;
+            pthread_create(&producer_thread[i], NULL, producer, &idM[i]);   // cria as threads
         }
 
         for (int i = 0; i < M_mesa; i++) {
