@@ -81,6 +81,30 @@ void *file_selecter(void *threadid)
     
 }
 
+void print()
+{
+    printf("Produtos:\n");
+    int cont = 0;
+    for(int i = 0; i <=p; i++)
+    {
+        if(product[i] != 0)
+        {
+            cont+=product[i];
+        }
+    }
+
+    printf("Total: %d\n", cont);
+
+    for(int i = 0; i <=p; i++)
+    {
+        if(product[i] != 0)
+        {
+            printf("Produto %d teve %d%% de venda\n", i, (product[i]*100)/cont);
+        }
+    }
+
+}
+
 int main()
 {
     setup();
@@ -91,7 +115,7 @@ int main()
     product_free = (pthread_cond_t *)malloc((p + 1) * sizeof(pthread_cond_t));  // product_free = cond para cada produto
     product_in_use = (int *)calloc((p + 1), sizeof(int));                    // product_in_use = vetor de produtos em uso
     visit = (int *)calloc(n, sizeof(int));                                  // visit = vetor de visitados
-    product = (int *)malloc((p + 1) * sizeof(int));                         // product = vetor de produtos
+    product = (int *)calloc(p+1, sizeof(int));                         // product = vetor de produtos
 
     for (int i = 0; i < p; i++)
     {
@@ -113,6 +137,10 @@ int main()
         pthread_join(threads[i], NULL); // espera as threads terminarem
     }
                         // liberação de memória
+
+    print();
+
+    
     free(mutex_arr);
     free(product_free);
     free(product_in_use);
