@@ -74,19 +74,3 @@ int main(){
     }
     
 }
-
-
-/*
-criacao e termino de threads
-    int pthread_create(pthread_t * thread,
-    const pthread_attr_t * attr,
-    void * (*start_routine)(void *),
-    void *arg)
-    
-    void pthread_exit(void *retval)
-*/
-
-/*
-faz uma thread até que outra thread termine
-int pthread_join(pthread_t th, void **thread_return)
-*/
