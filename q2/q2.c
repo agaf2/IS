@@ -1,3 +1,4 @@
+// O arquivo de executável deve está no mesmo diretório dos arquivos de entrada.
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
