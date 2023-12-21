@@ -267,7 +267,7 @@ int main(){
             
 
 
-            
+            //ALBERTO CHECAR
             // Assume que você deseja adicionar dois nós na primeira linha de result.matrix
             result.matrix = (Pair**)realloc(result.matrix, (result.esplines + 2) * sizeof(Pair*));
 
