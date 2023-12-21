@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-//falta criar a lista de prioridade
-
 int pos[10] = {0,0,0,0, 0, 0, 0, 0, 0, 0}; // posicao de cada trem 
 int inter_cont[5] = {0,0,0,0,0}; // quantidade de trens em cada intercesao
 
