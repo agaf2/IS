@@ -4,20 +4,29 @@
 
 int N_robos, M_mesa, Q_fila;
 int cont = 0;
+int first = 0;
+int last = 0;
+int *fila;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
 pthread_cond_t full = PTHREAD_COND_INITIALIZER;
 
-void put()
+void put(int i)
 {
     pthread_mutex_lock(&mutex); // trava o mutex
     while (cont == Q_fila)
     {
         pthread_cond_wait(&empty, &mutex); // espera a fila não estar cheia
     }
+    fila[last] = i;
     cont++;
+    last++;
 
+    if (last == Q_fila)
+    {
+        last = 0;
+    }
     if (cont == 1)
     {
         pthread_cond_broadcast(&full); // sinaliza que a fila não está mais vazia
@@ -25,30 +34,41 @@ void put()
     pthread_mutex_unlock(&mutex); // libera o mutex
 }
 
-void get()
+int get()
 {
+    int resultado;
     pthread_mutex_lock(&mutex);
     while (cont == 0)
     {
         pthread_cond_wait(&full, &mutex); // espera a fila não estar vazia
     }
+    resultado = fila[first];
+
     cont--;
+    first++;
+
+    if (first == Q_fila)
+    {
+        first = 0;
+    }
 
     if (cont == Q_fila - 1)
     {
         pthread_cond_broadcast(&empty); // sinaliza que a fila não está mais cheia
     }
     pthread_mutex_unlock(&mutex); // libera o mutex
+
+    return resultado;
 }
 
 void *producer(void *threadid)
 {
     int id = *((int *)threadid);
-    while (1)
+    for (int i = 0;; i++)
     {
         printf("Mesa %d iniciou\n", *((int *)threadid));
-        put(); // produz
-        printf("Mesa %d produziu 1\n", id);
+        put(i); // produz
+        printf("Mesa %d produziu %d\n", id, i);
         printf("A fila tem %d itens\n", cont);
         printf("Mesa %d terminou\n", id);
     }
@@ -56,15 +76,15 @@ void *producer(void *threadid)
 
 void *consumer(void *threadid)
 {
+    int save;
     int id = *((int *)threadid);
-    while (1)
+    printf("Robo %d iniciou\n", id);
+    for (int i = 0;; i++)
     {
-        printf("robo %d iniciou\n", id);
-        get(); // consome
-        printf("robo %d consumiu 1\n", id);
-        printf("A fila tem %d itens\n", cont);
-        printf("robo %d terminou \n", id);
+        save = get(); // consome
+        printf("Robo %d consumiu %d\n", id, save);
     }
+    printf("Robo %d terminou \n", id);
 }
 
 int main()
@@ -82,6 +102,7 @@ int main()
 
     printf("Digite tamanho maximo da fila: ");
     scanf("%d", &Q_fila);
+    fila = (int *)malloc(sizeof(int) * Q_fila);
 
     pthread_t producer_thread[M_mesa];  // Threads do tipo consumidor
     pthread_t consumer_thread[N_robos]; // Threads do tipo produtor
