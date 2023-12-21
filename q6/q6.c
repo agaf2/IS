@@ -31,17 +31,17 @@ void *multiply_sparse_matrices(void *args)
 
     for (int j = 0; j < aux.columns; j++)
     {
-        result.matrix[row][j].val = 0;
+        result.matrix[row][j].val = 0; // Inicializa o valor da célula da matriz resultante
 
         for (int k = 0; k < aux.columns; k++)
         {
-            if (k < aux.espcolumns[row] && aux.matrix[row][k].index == k)
+            if (k < aux.espcolumns[row] && aux.matrix[row][k].index == k) // Se o elemento da matriz auxiliar não for nulo
             {
                 for (int m = 0; m < defaultzin.columns; m++)
                 {
-                    if (m < defaultzin.espcolumns[k] && defaultzin.matrix[k][m].index == m)
+                    if (m < defaultzin.espcolumns[k] && defaultzin.matrix[k][m].index == m) // Se o elemento da matriz defaultzin não for nulo
                     {
-                        result.matrix[row][j].val += aux.matrix[row][k].val * defaultzin.matrix[k][m].val;
+                        result.matrix[row][j].val += aux.matrix[row][k].val * defaultzin.matrix[k][m].val; // Multiplica os elementos e soma ao valor da célula da matriz resultante
                     }
                 }
             }
@@ -50,7 +50,7 @@ void *multiply_sparse_matrices(void *args)
     pthread_exit(NULL);
 }
 
-void print_result_matrix(Matrix *matriz)
+void print_result_matrix(Matrix *matriz) // Função para imprimir a matriz resultante
 {
     printf("Matriz Resultante:\n");
     for (int i = 0; i < matriz->lines; i++)
@@ -73,7 +73,7 @@ void setup_sparse_matrix(int lines, int columns, Matrix *matriz)
     matriz->espcolumns = NULL;
     matriz->maxcolumns = 0;
 
-    matriz->matrix = (Pair **)malloc(lines * sizeof(Pair *));
+    matriz->matrix = (Pair **)malloc(lines * sizeof(Pair *)); // Aloca memória para as linhas da matriz
     for (int i = 0; i < lines; i++)
     {
         matriz->matrix[i] = NULL;
@@ -81,14 +81,14 @@ void setup_sparse_matrix(int lines, int columns, Matrix *matriz)
         matriz->espcolumns = (int *)realloc(matriz->espcolumns, matriz->esplines * sizeof(int));
         matriz->espcolumns[i] = 0;
 
-        matriz->matrix[i] = (Pair *)malloc(columns * sizeof(Pair));
+        matriz->matrix[i] = (Pair *)malloc(columns * sizeof(Pair)); // Aloca memória para as colunas da matriz
         for (int j = 0; j < columns; j++)
         {
             float val;
             printf("Digite o elemento da linha %d, coluna %d: ", i, j);
             scanf("%f", &val);
 
-            if (val != 0)
+            if (val != 0) // Se o elemento não for nulo
             {
                 matriz->matrix[i][matriz->espcolumns[i]].val = val;
                 matriz->matrix[i][matriz->espcolumns[i]].index = j;
@@ -99,7 +99,7 @@ void setup_sparse_matrix(int lines, int columns, Matrix *matriz)
                 }
             }
         }
-        matriz->matrix[i] = realloc(matriz->matrix[i], matriz->espcolumns[i] * sizeof(Pair));
+        matriz->matrix[i] = realloc(matriz->matrix[i], matriz->espcolumns[i] * sizeof(Pair)); // Realoca a memória para a linha da matriz
     }
 }
 
@@ -122,19 +122,19 @@ int main()
 
         switch (option)
         {
-        case 1:
+        case 1: // Configuração da matriz defaultzin
             printf("Digite as dimensões para a matriz 'default' (linhas colunas): ");
             int lines_defaultzin, columns_defaultzin;
             scanf("%d %d", &lines_defaultzin, &columns_defaultzin);
             setup_sparse_matrix(lines_defaultzin, columns_defaultzin, &defaultzin);
             break;
-        case 2:
+        case 2: // Configuração da matriz auxiliar
             printf("Digite as dimensões da 'aux' (linhas colunas): ");
             int lines_aux, columns_aux;
             scanf("%d %d", &lines_aux, &columns_aux);
             setup_sparse_matrix(lines_aux, columns_aux, &aux);
             break;
-        case 3:
+        case 3: // Multiplicação das matrizes
             if (defaultzin.lines == aux.columns)
             {
                 result.lines = aux.lines;
@@ -166,7 +166,7 @@ int main()
                 printf("Dimensões da matriz não são compatíveis para multiplicação.\n");
             }
             break;
-        case 4:
+        case 4: // Limpeza e saída do programa
             // Limpeza e saída do programa
             for (int i = 0; i < aux.lines; i++)
             {
