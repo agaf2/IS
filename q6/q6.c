@@ -28,7 +28,7 @@ Matrix aux = {NULL, 0, 0, 0, NULL};
 void espacar(int lines, int columns, Matrix * matriz){
 
     int cont;
-    Pair aux;
+    float aux;
     for(int i = 0; i < lines; i++){
         (*matriz).esplines++;                             //conta quantas linhas não nulas tem na matriz
         (*matriz).matrix = (Pair**) realloc((*matriz).matrix, ((*matriz).esplines)*sizeof(Pair*));    //aloca uma linha a mais
@@ -36,11 +36,11 @@ void espacar(int lines, int columns, Matrix * matriz){
         (*matriz).espcolumns = (int*) realloc((*matriz).espcolumns, ((*matriz).esplines)*sizeof(int)); //aloca um elemento a mais no vetor de colunas
         cont = 0;                       //conta quantos elementos não nulos tem na linha
         for(int j = 0; j < columns; j++){          
-            scanf("%f", &aux.val);      
-            if(aux.val != 0){           
+            scanf("%f", &aux);      
+            if(aux != 0){           
                 (*matriz).matrix[i] = (Pair*) realloc((*matriz).matrix[i], (cont+1)*sizeof(Pair));  //aloca um elemento a mais na linha
                 (*matriz).matrix[i][j].index = j;                                         //atribui o indice do elemento
-                (*matriz).matrix[i][j].val = aux.val;                                     //atribui o valor do elemento
+                (*matriz).matrix[i][j].val = aux;                                     //atribui o valor do elemento
                 cont++;                                                         //incrementa o contador de elementos não nulos
             }
         }
